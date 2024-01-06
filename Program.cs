@@ -9,17 +9,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IConnectionService, ConnectionService>();
 builder.Services.AddScoped<IMessageProducer, MessageProducer>();
-var hostName = "172.16.21.31";
-var port = "15672";
+//var hostName = "172.16.21.31";
+//var port = "15672";
 builder.Services.AddSingleton<MessageConsumer>(sp =>
 {
     var factory = new ConnectionFactory()
     {
 
-        Uri = new Uri($"amqp:/guest:guest@{hostName}:{port}"),
+        //Uri = new Uri($"amqp:/guest:guest@{hostName}:{port}"),
+        HostName = "172.16.21.31",
+        Port = AmqpTcpEndpoint.UseDefaultPort,
         VirtualHost = "/",
         UserName = "guest",
-        Password = "guest"
+        Password = "guest",
+        AuthMechanisms = new List<IAuthMechanismFactory>(){new ExternalMechanismFactory(),new PlainMechanismFactory()}
+
     };
     return new MessageConsumer(factory);
 
